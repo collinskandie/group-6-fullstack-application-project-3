@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { getIndicators, getCountries } from "../services/gho";
+import Hero from "../components/Hero";
+
 function Dashboard() {
   const [indicators, setIndicators] = useState([]);
   const [countries, setCountries] = useState([]);
@@ -23,6 +25,7 @@ function Dashboard() {
 
   return (
     <div>
+      <Hero />
       <h1>Dashboard</h1>
       <p>Indicators: {indicators.length}</p>
       <p>Countries: {countries.length}</p>
