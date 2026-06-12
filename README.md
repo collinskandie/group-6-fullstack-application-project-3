@@ -1,14 +1,12 @@
+# Global Health Observatory
 
-# [Project Name]
-
-> [One sentence that explains what your app does and who it's for — e.g. "A clean weather dashboard that helps commuters decide what to wear before they leave the house."]
+> A clean dashboard that lets anyone explore WHO health indicators — life expectancy, immunization, disease burden — across 234 countries without needing to know the API.
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
 
-<!-- Optional: add a deployed link badge once you've deployed -->
-**🔗 Live Demo:** [moringa-project.syknown.co.ke](https://) &nbsp;·&nbsp; **🎥 Walkthrough:** [video link](https://)
+**🔗 Live Demo:** [moringa-project.syknown.co.ke](https://moringa-project.syknown.co.ke) &nbsp;·&nbsp; **🎥 Walkthrough:** [video link](https://)
 
 ---
 
@@ -32,38 +30,33 @@
 
 ## About the Project
 
-<!-- This is the section graders read first. Answer the four consideration questions in plain prose. -->
+**The problem.** Global health data from the WHO is publicly available but buried in raw API responses that are hard for non-technical people to explore or compare.
 
-**The problem.** [What real user problem does this solve? 1–2 sentences.]
+**The user.** Students, researchers, and public health enthusiasts who want to understand how health outcomes differ across countries — without reading API documentation or writing SQL.
 
-**The user.** [Who would actually use this and why? Be specific — "people learning to cook on a budget," not "everyone."]
+**The product.** Global Health Observatory lets users pick a country and immediately see summary health stats, explore how a single indicator has changed over time on a line chart, and compare that indicator across up to four countries side by side.
 
-**The product.** [Project Name] lets users [describe the core interaction in one or two sentences — what they see, what they can do, and what they get out of it].
-
-This is **Phase 1 of 3** of our capstone. Phase 1 is a fully client-side React app that pulls live data from a public API. In Phase 2 we replace that API with our own Flask backend and database, and in Phase 3 we add authentication and user-owned data. We chose this idea specifically because it has room to grow into a full-stack, multi-user product.
+This is **Phase 1 of 3** of our capstone. Phase 1 is a fully client-side React app that pulls live data from the WHO GHO public API. In Phase 2 we replace that API with our own Flask backend and database, and in Phase 3 we add authentication and user-owned data. We chose this idea specifically because it has room to grow into a full-stack, multi-user product.
 
 ---
 
 ## Features
 
-<!-- List what the app actually does. Keep these honest and specific to your build. -->
-
-- 🔄 **Live data** — fetches up-to-date information from [API name] on demand.
-- ⏳ **Loading states** — clear feedback while data is being retrieved.
+- 🔄 **Live data** — fetches up-to-date indicators from the WHO GHO API on demand.
+- ⏳ **Loading states** — clear spinner feedback while data is being retrieved.
 - ⚠️ **Graceful error handling** — friendly messages when a request fails or returns nothing.
-- 🔍 **[Search / filter / sort]** — [describe how users narrow down or interact with the data].
-- 📄 **[Detail view]** — [describe what users see when they click into an item].
+- 📊 **Dashboard view** — animated stat cards showing key health indicators for a selected country.
+- 📈 **Trends view** — one indicator plotted over time as a line chart.
+- 🆚 **Compare view** — one indicator across 2–4 countries, side by side.
 - 📱 **Responsive layout** — works on mobile and desktop.
 
 ---
 
 ## Screenshots
 
-<!-- Replace these with real images. Put them in a /screenshots folder and reference them like below. -->
-
-| Home / List View | Detail View | [Search / Filter] |
+| Dashboard | Trends | Compare |
 | :---: | :---: | :---: |
-| ![Home](screenshots/home.png) | ![Detail](screenshots/detail.png) | ![Search](screenshots/search.png) |
+| ![Dashboard](screenshots/dashboard.png) | ![Trends](screenshots/trends.png) | ![Compare](screenshots/compare.png) |
 
 ---
 
@@ -72,42 +65,39 @@ This is **Phase 1 of 3** of our capstone. Phase 1 is a fully client-side React a
 | Layer | Choice |
 | --- | --- |
 | Framework | React 18 |
-| Build tool | [Vite / Create React App] |
-| Routing | [React Router / state-based view switching] |
-| Styling | [CSS Modules / Tailwind CSS / styled-components / plain CSS] |
-| Data fetching | [Fetch API / Axios] |
-| Deployment | [Vercel / Netlify / GitHub Pages] |
+| Build tool | Vite 5 |
+| Routing | State-based view switching (App.jsx) |
+| Styling | Plain CSS with CSS custom properties |
+| Data fetching | Fetch API |
+| Deployment | — |
 
 ---
 
 ## The API
 
-This app is built around the **[API Name]** — [one line on what it provides].
+This app is built around the **WHO Global Health Observatory (GHO) OData API** — a free, public API exposing 3,000+ health indicators across 234 countries.
 
-- **Docs:** [link to the API documentation]
-- **Endpoints used:** `[GET /endpoint]`, `[GET /endpoint/:id]`
-- **Auth:** [No key required / API key required — see setup below]
-
-<!-- If your API needs a key, keep the key OUT of the repo. Use an environment variable (see Getting Started). -->
+- **Docs:** [https://www.who.int/data/gho/info/gho-odata-api](https://www.who.int/data/gho/info/gho-odata-api)
+- **Base URL:** `https://ghoapi.azureedge.net/api`
+- **Endpoints used:** `GET /Indicator`, `GET /WHOSIS_000001`, `GET /{code}?$filter=SpatialDim eq '{ISO3}'`
+- **Auth:** No key required
 
 ---
 
 ## Project Structure
 
-<!-- Update this to match your actual folders. This is a typical Vite + React layout. -->
-
 ```
-[project-name]/
+group-project/
 ├── public/
 ├── src/
-│   ├── assets/            # images, icons
-│   ├── components/        # reusable UI pieces (Card, Navbar, SearchBar...)
-│   ├── pages/             # top-level views (Home, Detail, About...)
-│   ├── services/          # API calls live here (api.js)
-│   ├── App.jsx            # routes / view switching
+│   ├── components/        # ErrorMessage, Hero, Loading, Navbar, StatCard
+│   ├── pages/             # Dashboard, Trends, Compare
+│   ├── services/
+│   │   └── gho.js         # all WHO API calls live here
+│   ├── App.jsx            # view switching
+│   ├── index.css          # design system + component styles
 │   └── main.jsx           # entry point
-├── .env.example           # template for required env variables
-├── .gitignore
+├── index.html
 ├── package.json
 └── README.md
 ```
@@ -126,25 +116,11 @@ This app is built around the **[API Name]** — [one line on what it provides].
 ```bash
 # 1. Clone the repo
 git clone https://github.com/collins-moringa/module-6-group-6-project.git
-cd [repo-name]
+cd module-6-group-6-project
 
 # 2. Install dependencies
 npm install
-
-# 3. Set up environment variables (only if your API needs a key)
-cp .env.example .env
-# then open .env and add your key
 ```
-
-<!-- DELETE this env block entirely if your API does NOT require a key. -->
-Your `.env` should look like this:
-
-```env
-VITE_API_KEY=your_api_key_here
-VITE_API_BASE_URL=https://api.example.com
-```
-
-> ⚠️ Never commit your real `.env` file. It's already in `.gitignore`. With Vite, env variables must be prefixed with `VITE_` and accessed via `import.meta.env.VITE_API_KEY`.
 
 ### Run it
 
@@ -153,6 +129,8 @@ npm run dev
 ```
 
 Then open the local URL shown in your terminal (usually `http://localhost:5173`).
+
+> No API key required — the WHO GHO API is fully public.
 
 ---
 
@@ -163,53 +141,47 @@ Then open the local URL shown in your terminal (usually `http://localhost:5173`)
 | `npm run dev` | Starts the local development server |
 | `npm run build` | Builds the app for production |
 | `npm run preview` | Serves the production build locally |
-| `npm run lint` | [Runs the linter — remove if not configured] |
 
 ---
 
 ## How It Works
 
-<!-- This short section signals to graders that you understand the required concepts: fetching, state, and component structure. Keep it concrete. -->
-
-**Data fetching.** API calls are centralized in `src/services/api.js` so components stay clean. Requests run inside `useEffect` (or on user action), and responses are stored in component state.
+**Data fetching.** All WHO GHO calls are centralized in `src/services/gho.js` so components stay clean. Requests run inside `useEffect`, and responses are stored in component state.
 
 **State management.** Every data view tracks three pieces of state:
 
-- `loading` — true while the request is in flight, used to show a spinner/skeleton.
+- `loading` — true while the request is in flight, used to show a spinner.
 - `error` — captures failed requests so we can show a friendly message instead of a blank screen.
 - `data` — the fetched results that drive the UI.
 
-**Components & views.** The app is split into [number] main views — [e.g. **Home** (browse), **Detail** (single item), **About**] — composed of smaller reusable components like [Card, Navbar, SearchBar].
+**Components & views.** The app has three main views — **Dashboard** (stat cards for a country), **Trends** (single indicator over time), and **Compare** (one indicator across multiple countries) — composed of shared components like `StatCard`, `Navbar`, `Loading`, and `ErrorMessage`.
 
 ---
 
 ## Roadmap
 
-This project is intentionally designed to grow across three phases:
-
-- [x] **Phase 1 — React frontend** (this repo): live public-API data, loading/error states, 3+ views, responsive styling.
+- [x] **Phase 1 — React frontend** (this repo): live WHO API data, loading/error states, 3 views, responsive styling.
 - [ ] **Phase 2 — Backend & database:** replace the public API with a Flask backend and a database we control.
-- [ ] **Phase 3 — Auth & user data:** add authentication so each user has their own saved [favorites / history / lists].
+- [ ] **Phase 3 — Auth & user data:** add authentication so each user can save favourite indicators and countries.
 
 ---
 
 ## The Team
 
-<!-- Add every group member. Link their GitHub. -->
-
 | Name | Role | GitHub |
 | --- | --- | --- |
-| [Name] | [Frontend / API integration / Styling] | [@username](https://github.com/) |
-| [Name] | [...] | [@username](https://github.com/) |
-| [Name] | [...] | [@username](https://github.com/) |
+| Collins Kiptoo | Lead — repo, API layer, integration, deployment | [@collins-moringa](https://github.com/collins-moringa) |
+| Shawn Ochieng | Dashboard view — country selector, StatCard, latest-year data | [@username](https://github.com/) |
+| Wasaa Abdalla | Trends view — indicator/country selectors, line chart | [@username](https://github.com/) |
+| Samuel Wanjau | Compare view — multi-country picker, comparison chart | [@username](https://github.com/) |
+| Rhoda Kinoti | UI/UX — design system, Navbar, Loading/Error components, styling | [@rhodaandrian-cell](https://github.com/rhodaandrian-cell) |
 
 ---
 
 ## Acknowledgements
 
-- [API Name] for the data — [docs link]
+- [WHO Global Health Observatory](https://www.who.int/data/gho/info/gho-odata-api) for the data
 - Moringa School Capstone, Phase 1
-- [Any libraries, tutorials, or assets worth crediting]
 
 ---
 
