@@ -4,7 +4,6 @@
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](#license)
 
 **🔗 Live Demo:** [moringa-project.syknown.co.ke](https://moringa-project.syknown.co.ke) &nbsp;·&nbsp; **🎥 Walkthrough:** [video link](https://)
 
@@ -24,7 +23,6 @@
 - [Roadmap](#roadmap)
 - [The Team](#the-team)
 - [Acknowledgements](#acknowledgements)
-- [License](#license)
 
 ---
 
@@ -170,7 +168,7 @@ Then open the local URL shown in your terminal (usually `http://localhost:5173`)
 
 | Name | Role | GitHub |
 | --- | --- | --- |
-| Collins Kiptoo | Lead — repo, API layer, integration, deployment | [@collins-moringa](https://github.com/collins-moringa) |
+| Collins Kiptoo | Lead — repo, API layer, integration, deployment | [@collins-moringa](https://github.com/collins-moringa)/[@collinskandie](https://github.com/collinskandie) |
 | Shawn Ochieng | Dashboard view — country selector, StatCard, latest-year data | [@username](https://github.com/) |
 | Wasaa Abdalla | Trends view — indicator/country selectors, line chart | [@username](https://github.com/) |
 | Samuel Wanjau | Compare view — multi-country picker, comparison chart | [@username](https://github.com/) |
@@ -183,8 +181,3 @@ Then open the local URL shown in your terminal (usually `http://localhost:5173`)
 - [WHO Global Health Observatory](https://www.who.int/data/gho/info/gho-odata-api) for the data
 - Moringa School Capstone, Phase 1
 
----
-
-## License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
