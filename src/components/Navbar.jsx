@@ -1,23 +1,26 @@
 const LINKS = [
-  { key: "dashboard", label: "Dashboard" },
-  { key: "trends", label: "Trends" },
-  { key: "compare", label: "Compare" },
+  { key: "dashboard", label: "Dashboard", icon: "▦" },
+  { key: "trends", label: "Trends", icon: "📈" },
+  { key: "compare", label: "Compare", icon: "⇄" },
 ];
 
 function Navbar({ view, onNavigate }) {
   return (
-    <nav className="navbar">
-      <div className="navbar-brand">
-        <span className="navbar-title">Global Health Observatory</span>
+    <nav className="sidebar">
+      <div className="sidebar-brand">
+        <span className="sidebar-logo" aria-hidden="true" />
+        <span className="sidebar-title">Global Health Observatory</span>
       </div>
-      <ul className="navbar-links">
-        {LINKS.map(({ key, label }) => (
+      <ul className="sidebar-links">
+        {LINKS.map(({ key, label, icon }) => (
           <li key={key}>
             <button
-              className={`nav-link${view === key ? " active" : ""}`}
+              className={`sidebar-link${view === key ? " active" : ""}`}
               onClick={() => onNavigate(key)}
+              title={label}
             >
-              {label}
+              <span className="sidebar-icon" aria-hidden="true">{icon}</span>
+              <span className="sidebar-label">{label}</span>
             </button>
           </li>
         ))}
