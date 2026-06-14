@@ -2,10 +2,6 @@ function TrendsHero() {
   return (
     <section className="trends-hero">
       <div className="trends-hero-content">
-        <span className="trends-badge">
-          WHO Historical Health Data
-        </span>
-
         <h1 className="trends-title">
           Explore health indicators over time
         </h1>

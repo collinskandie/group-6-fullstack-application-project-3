@@ -35,11 +35,10 @@ function Hero({ onGetStarted }) {
       <div className="hero-banner">
         <div className="hero-cross-layer" ref={crossLayer} aria-hidden="true" />
         <div className="hero-content">
-          <span className="hero-badge">Powered by WHO data</span>
           <h1 className="hero-title">Explore global health, country by country</h1>
           <p className="hero-subtitle">
             Life expectancy, immunization, and disease burden across 234 countries
-            and 3,000+ indicators — all in one place.
+            and 3,000+ indicators - all in one place.
           </p>
           {onGetStarted && (
             <button className="hero-cta" onClick={onGetStarted}>

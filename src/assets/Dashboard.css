@@ -1,18 +1,20 @@
-/* ── Dashboard Layout & Header ── */
+/* Dashboard — Shawn's card style kept (top accent strip on hover),
+   tuned to the shared teal palette. */
 
+/* Header */
 .dashboard-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 1.5rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1rem;
     flex-wrap: wrap;
 }
 
 .dashboard-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
     color: var(--color-text);
     margin-bottom: 0.25rem;
 }
@@ -22,8 +24,7 @@
     font-size: 0.95rem;
 }
 
-/* ── Custom Form Selector ── */
-
+/* Country selector */
 .selector-wrapper {
     display: flex;
     flex-direction: column;
@@ -52,8 +53,6 @@
     cursor: pointer;
     box-shadow: var(--shadow);
     transition: border-color 0.15s, box-shadow 0.15s;
-
-    /* Custom Arrow Graphic */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%235e716c' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.85rem center;
@@ -63,11 +62,10 @@
 .country-select:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgb(13 148 136 / 0.15);
+    box-shadow: 0 0 0 3px rgb(13 148 136 / 0.12);
 }
 
-/* ── Error Banner ── */
-
+/* Error banner */
 .error-banner {
     background-color: var(--color-error-bg);
     border: 1px solid var(--color-error-border);
@@ -79,11 +77,10 @@
     font-weight: 500;
 }
 
-/* ── Animated Stats Grid & Cards ── */
-
+/* Stats grid */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
     gap: 1.5rem;
     transition: opacity 0.2s ease;
 }
@@ -93,6 +90,7 @@
     pointer-events: none;
 }
 
+/* Cards — Shawn's original style: clean surface, top accent strip on hover */
 .stat-card {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -103,8 +101,6 @@
     flex-direction: column;
     position: relative;
     overflow: hidden;
-
-    /* Keyframe Entry Animation Configuration */
     opacity: 0;
     transform: translateY(15px);
     animation: cardFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -117,7 +113,7 @@
     box-shadow: var(--shadow-md);
 }
 
-/* Accent top border strip on hover */
+/* Accent top border strip on hover (Shawn's signature touch) */
 .stat-card::after {
     content: "";
     position: absolute;
@@ -166,8 +162,8 @@
 .stat-value {
     font-size: 2.25rem;
     font-weight: 800;
-    color: var(--color-text);
-    letter-spacing: -0.03em;
+    color: var(--color-primary-dark);
+    letter-spacing: -0.02em;
     line-height: 1.1;
 }
 
@@ -178,11 +174,33 @@
     font-weight: 500;
 }
 
-/* ── Animation Keyframes ── */
-
+/* Entry animation */
 @keyframes cardFadeIn {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .stat-card {
+        opacity: 1;
+        transform: none;
+        animation: none;
+    }
+    .stat-card:hover {
+        transform: none;
+    }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .selector-wrapper {
+        min-width: 0;
+        width: 100%;
     }
 }
