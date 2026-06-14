@@ -14,10 +14,10 @@ function App() {
   const [view, setView] = useState("dashboard");
 
   return (
-    <>
+    <div className="app-shell">
       <Navbar view={view} onNavigate={setView} />
       <main className="main-content">{VIEWS[view]}</main>
-    </>
+    </div>
   );
 }
 
