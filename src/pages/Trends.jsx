@@ -21,8 +21,9 @@ function Trends() {
   const [trendData, setTrendData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filterError, setFilterError] = useState(null);
 
-  // Load countries + indicators
+  // Load countries + indicators — failure here is non-blocking (chart can still work with defaults)
   useEffect(() => {
     async function loadFilters() {
       try {
@@ -33,7 +34,7 @@ function Trends() {
         setCountries(countryData);
         setIndicators(indicatorData);
       } catch (err) {
-        setError(err.message);
+        setFilterError("Could not load filter options. Showing default selection.");
       }
     }
     loadFilters();
@@ -47,10 +48,11 @@ function Trends() {
 
     getIndicatorData(selectedIndicator, selectedCountry)
       .then((rows) => {
-        const cleanedData = rows
+        const safeRows = Array.isArray(rows) ? rows : [];
+        const cleanedData = safeRows
           .filter(
             (row) =>
-              row.NumericValue && (!row.Dim1 || row.Dim1 === "BTSX")
+              row.NumericValue != null && (!row.Dim1 || row.Dim1 === "BTSX")
           )
           .sort((a, b) => Number(a.TimeDim) - Number(b.TimeDim))
           .map((row) => ({
@@ -74,6 +76,12 @@ function Trends() {
   return (
     <div className="trends-page">
       <TrendsHero />
+
+      {filterError && (
+        <p style={{ color: "#b45309", fontSize: "13px", padding: "0 24px 12px" }}>
+          {filterError}
+        </p>
+      )}
 
       {/* Filters */}
       <div className="trends-filters">
@@ -136,6 +144,11 @@ function Trends() {
       {/* Chart */}
       <div className="chart-card">
         <h2 className="filter-label mb-4">Trend Over Time</h2>
+        {!loading && trendData.length === 0 && (
+          <p style={{ color: "#6b7280", fontStyle: "italic", padding: "24px 0" }}>
+            No data available for this country and indicator combination.
+          </p>
+        )}
         <ResponsiveContainer width="100%" height={450}>
           <LineChart data={trendData}>
             <CartesianGrid strokeDasharray="3 3" />
