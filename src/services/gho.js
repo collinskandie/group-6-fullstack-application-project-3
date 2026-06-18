@@ -1,4 +1,3 @@
-//. declare our api
 const BASE_URL = "/api";
 async function apiFetch(path) {
   const res = await fetch(`${BASE_URL}${path}`);
