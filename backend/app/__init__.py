@@ -14,6 +14,12 @@ def create_app():
     CORS(app)
 
     db.init_app(app)
+
+    with app.app_context():
+        from app.models.country import Country
+        from app.models.favorite import Favorite
+        db.create_all()
+        
     migrate.init_app(app, db)
     ma.init_app(app)
 
