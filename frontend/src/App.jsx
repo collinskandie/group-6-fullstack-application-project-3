@@ -7,6 +7,7 @@ import Compare from './pages/Compare';
 import Favorites from './pages/Favorites';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import WatchlistSidebar from "./components/WatchlistSidebar";
 
 export default function App() {
   return (
