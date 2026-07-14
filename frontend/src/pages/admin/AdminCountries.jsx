@@ -50,10 +50,11 @@ function AdminCountries() {
   return (
     <div>
       <div className="filter-card" style={{ marginBottom: "1.5rem", maxWidth: "420px" }}>
-        <label className="filter-label">Add Country</label>
+        <h3 className="filter-label">Add Country</h3>
         <form onSubmit={handleAdd} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           <input
             type="text"
+            aria-label="Country name"
             placeholder="Country Name (e.g., Kenya)"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -61,20 +62,18 @@ function AdminCountries() {
           />
           <input
             type="text"
+            aria-label="ISO code"
             placeholder="3-Letter ISO Code (e.g., KEN)"
             value={isoCode}
             onChange={(e) => setIsoCode(e.target.value)}
             maxLength={3}
             className="filter-select"
           />
-          <button
-            type="submit"
-            style={{ background: "var(--color-primary)", color: "#fff", fontWeight: 600, fontSize: "0.875rem", padding: "0.6rem 1.25rem", border: "none", borderRadius: "var(--radius)", cursor: "pointer" }}
-          >
+          <button type="submit" className="btn-primary">
             Save Country
           </button>
         </form>
-        {formError && <p style={{ color: "#dc2626", fontSize: "13px", marginTop: "8px" }}>{formError}</p>}
+        {formError && <p style={{ color: "var(--color-error-text)", fontSize: "13px", marginTop: "8px" }}>{formError}</p>}
       </div>
 
       <table className="data-table">
@@ -91,10 +90,7 @@ function AdminCountries() {
               <td>{c.name}</td>
               <td>{c.iso_code}</td>
               <td style={{ textAlign: "right" }}>
-                <button
-                  onClick={() => handleDelete(c.id)}
-                  style={{ background: "#d93025", color: "#fff", border: "none", padding: "4px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}
-                >
+                <button onClick={() => handleDelete(c.id)} className="btn-danger">
                   Delete
                 </button>
               </td>

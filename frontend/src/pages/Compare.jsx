@@ -97,92 +97,94 @@ function Compare() {
 
   return (
     <main className="main-content">
-    <div style={{ maxWidth: "850px", margin: "0 auto" }}>
-      <h2 style={{ marginBottom: "8px" }}>Country Comparison Dashboard</h2>
-      <p style={{ color: "#555", marginBottom: "24px" }}>
-        Compare <strong>Life Expectancy at Birth</strong> side-by-side across 2 to 4 countries.
-      </p>
+      <div style={{ maxWidth: "850px", margin: "0 auto" }}>
+        <header className="page-header" style={{ border: "none", paddingBottom: 0, marginBottom: "1.5rem" }}>
+          <div>
+            <h1>Country Comparison Dashboard</h1>
+            <p className="dashboard-subtitle" style={{ marginTop: "0.25rem" }}>
+              Compare <strong>Life Expectancy at Birth</strong> side-by-side across 2 to 4 countries.
+            </p>
+          </div>
+        </header>
 
-      {/* Checklist Box */}
-      <div style={{
-        border: "1px solid #ccc",
-        padding: "16px",
-        borderRadius: "6px",
-        marginBottom: "8px",
-        maxHeight: "160px",
-        overflowY: "auto",
-        background: "#fafafa"
-      }}>
-        <b style={{ display: "block", marginBottom: "10px" }}>Select Countries to Compare:</b>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "8px" }}>
-          {countries.map((item) => (
-            <label key={item.Code} style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "14px" }}>
-              <input
-                type="checkbox"
-                checked={selectedCountries.includes(item.Code)}
-                onChange={() => toggleCountrySelection(item.Code)}
-              />
-              {item.Title || item.Code}
-            </label>
-          ))}
+        {/* Checklist Box */}
+        <div className="filter-card" style={{ marginBottom: "1.5rem", maxHeight: "10rem", overflowY: "auto" }}>
+          <h3 className="filter-label">Select Countries to Compare</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "0.5rem" }}>
+            {countries.map((item) => (
+              <label key={item.Code} style={{ display: "flex", alignItems: "center", gap: "0.375rem", cursor: "pointer", fontSize: "0.875rem" }}>
+                <input
+                  type="checkbox"
+                  checked={selectedCountries.includes(item.Code)}
+                  onChange={() => toggleCountrySelection(item.Code)}
+                />
+                {item.Title || item.Code}
+              </label>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Inline selection warning (replaces alert()) */}
-      {selectionWarning && (
-        <p style={{ color: "#b45309", fontSize: "13px", marginBottom: "16px" }}>
-          {selectionWarning}
-        </p>
-      )}
+        {/* Inline selection warning (replaces alert()) */}
+        {selectionWarning && (
+          <p style={{ color: "#b45309", fontSize: "13px", marginBottom: "16px" }}>
+            {selectionWarning}
+          </p>
+        )}
 
-      {isLoading && <p style={{ color: "#888", fontStyle: "italic", marginBottom: "16px" }}>Refreshing chart data...</p>}
+        {isLoading && (
+          <p style={{ color: "var(--color-text-muted)", fontStyle: "italic", marginBottom: "1rem" }}>
+            Refreshing chart data...
+          </p>
+        )}
 
-      {/* CSS Bar Chart */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        {chartData.map((row) => {
-          const match = countries.find((c) => c.Code === row.code);
-          const name = match ? match.Title : row.code;
-          const percentageWidth = row.score != null ? Math.min((row.score / 95) * 100, 100) : 0;
+        {/* CSS Bar Chart */}
+        <div className="chart-card">
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {chartData.map((row) => {
+              const match = countries.find((c) => c.Code === row.code);
+              const name = match ? match.Title : row.code;
+              const percentageWidth = row.score != null ? Math.min((row.score / 95) * 100, 100) : 0;
 
-          return (
-            <div key={row.code} style={{ display: "grid", gridTemplateColumns: "160px 1fr 70px", alignItems: "center", gap: "12px" }}>
-              <div style={{ fontSize: "14px", fontWeight: "500", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {name}
-              </div>
+              return (
+                <div key={row.code} style={{ display: "grid", gridTemplateColumns: "10rem 1fr 4.5rem", alignItems: "center", gap: "0.75rem" }}>
+                  <div style={{ fontSize: "0.875rem", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {name}
+                  </div>
 
-              <div style={{ background: "#eaeaea", borderRadius: "2px", height: "20px", width: "100%" }}>
-                {row.error ? (
-                  <span style={{ fontSize: "12px", color: "#dc2626", paddingLeft: "8px", lineHeight: "20px", display: "block" }}>
-                    {row.error}
-                  </span>
-                ) : (
-                  <div style={{
-                    width: `${percentageWidth}%`,
-                    background: "#2563eb",
-                    height: "100%",
-                    borderRadius: "2px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                    paddingRight: "8px",
-                    boxSizing: "border-box",
-                    transition: "width 0.4s ease-out"
-                  }}>
-                    {row.score != null && row.score > 0 && (
-                      <span style={{ color: "#fff", fontSize: "11px", fontWeight: "600" }}>{row.score}</span>
+                  <div style={{ background: "var(--color-border)", borderRadius: "0.25rem", height: "1.25rem", width: "100%" }}>
+                    {row.error ? (
+                      <span style={{ fontSize: "0.75rem", color: "var(--color-error-text)", paddingLeft: "0.5rem", lineHeight: "1.25rem", display: "block" }}>
+                        {row.error}
+                      </span>
+                    ) : (
+                      <div style={{
+                        width: `${percentageWidth}%`,
+                        background: "var(--color-primary)",
+                        height: "100%",
+                        borderRadius: "0.25rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "flex-end",
+                        paddingRight: "0.5rem",
+                        boxSizing: "border-box",
+                        transition: "width 0.4s ease-out"
+                      }}>
+                        {row.score != null && row.score > 0 && (
+                          <span style={{ color: "#fff", fontSize: "0.7rem", fontWeight: 600 }}>{row.score}</span>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
 
-              <div style={{ fontSize: "12px", color: "#777", textAlign: "right" }}>
-                {row.error ? "—" : `Year: ${row.year}`}
-              </div>
-            </div>
-          );
-        })}
+                  <div style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", textAlign: "right" }}>
+                    {row.error ? "—" : `Year: ${row.year}`}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
-    </div>
     </main>
   );
 }

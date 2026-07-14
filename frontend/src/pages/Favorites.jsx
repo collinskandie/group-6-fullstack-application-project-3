@@ -89,12 +89,13 @@ function Favorites() {
       </header>
 
       <div className="filter-card" style={{ marginBottom: "1.5rem" }}>
-        <label className="filter-label">Add an Indicator + Country to your Watchlist</label>
+        <h3 className="filter-label">Add an Indicator + Country to your Watchlist</h3>
         <form onSubmit={handleAdd} style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center", marginTop: "0.5rem" }}>
-          
+
           {/* Country Selection Dropdown */}
           <select
             className="filter-select"
+            aria-label="Country"
             value={selectedCountryId}
             onChange={(e) => setSelectedCountryId(e.target.value)}
           >
@@ -108,6 +109,7 @@ function Favorites() {
           {/* New Phase 3 Indicator Dropdown Selection */}
           <select
             className="filter-select"
+            aria-label="Indicator"
             value={selectedIndicatorId}
             onChange={(e) => setSelectedIndicatorId(e.target.value)}
           >
@@ -118,18 +120,15 @@ function Favorites() {
             ))}
           </select>
 
-          <button
-            type="submit"
-            style={{ background: "var(--color-primary)", color: "#fff", fontWeight: 600, fontSize: "0.875rem", padding: "0.6rem 1.25rem", border: "none", borderRadius: "var(--radius)", cursor: "pointer" }}
-          >
+          <button type="submit" className="btn-primary">
             Save to Watchlist
           </button>
         </form>
-        {formError && <p style={{ color: "#dc2626", fontSize: "13px", marginTop: "8px" }}>{formError}</p>}
+        {formError && <p style={{ color: "var(--color-error-text)", fontSize: "13px", marginTop: "8px" }}>{formError}</p>}
       </div>
 
       {favorites.length === 0 ? (
-        <p style={{ color: "#6b7280" }}>No metrics saved on your tracking list yet.</p>
+        <p style={{ color: "var(--color-text-muted)" }}>No metrics saved on your tracking list yet.</p>
       ) : (
         <table className="data-table">
           <thead>
@@ -152,10 +151,7 @@ function Favorites() {
                     {countryCode && (
                       <Link to={`/trends?country=${countryCode}`}>View trends</Link>
                     )}
-                    <button
-                      onClick={() => handleDelete(fav.id)}
-                      style={{ background: "#d93025", color: "#fff", border: "none", padding: "4px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}
-                    >
+                    <button onClick={() => handleDelete(fav.id)} className="btn-danger">
                       Remove
                     </button>
                   </td>
