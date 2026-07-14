@@ -84,7 +84,7 @@ function Trends() {
       : null;
 
   return (
-    <div className="trends-page">
+    <main className="main-content">
       <TrendsHero />
 
       {countryError && (
@@ -208,7 +208,7 @@ function Trends() {
           </p>
         </div>
       )}
-    </div>
+    </main>
   );
 }
 

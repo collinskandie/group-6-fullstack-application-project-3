@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.extensions import db
-from app.auth import require_admin
 from app.models.indicator import Indicator
+from app.utils.decorators import admin_required
 
 indicator_bp = Blueprint("indicator", __name__)
 
@@ -13,7 +13,7 @@ def get_indicators():
 
 # 2. CREATE A NEW INDICATOR (With Validation & Error Handling)
 @indicator_bp.route("/", methods=["POST"])
-@require_admin
+@admin_required
 def create_indicator():
     data = request.get_json() or {}
 
@@ -46,7 +46,7 @@ def create_indicator():
 
 # 3. UPDATE AN INDICATOR (PUT)
 @indicator_bp.route("/<int:id>", methods=["PUT"])
-@require_admin
+@admin_required
 def update_indicator(id):
     indicator = Indicator.query.get(id)
     if not indicator:
@@ -85,7 +85,7 @@ def update_indicator(id):
 
 # 4. DELETE AN INDICATOR (DELETE)
 @indicator_bp.route("/<int:id>", methods=["DELETE"])
-@require_admin
+@admin_required
 def delete_indicator(id):
     indicator = Indicator.query.get(id)
     if not indicator:

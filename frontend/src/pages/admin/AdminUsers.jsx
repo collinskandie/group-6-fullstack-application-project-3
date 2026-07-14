@@ -22,15 +22,15 @@ function AdminUsers() {
     <table className="data-table">
       <thead>
         <tr>
-          <th>Username</th>
+          <th>Email</th>
           <th>Role</th>
         </tr>
       </thead>
       <tbody>
         {users.map((u) => (
           <tr key={u.id}>
-            <td>{u.username}</td>
-            <td>{u.is_admin ? "Admin" : "User"}</td>
+            <td>{u.email}</td>
+            <td>{u.role === "admin" ? "Admin" : "User"}</td>
           </tr>
         ))}
       </tbody>

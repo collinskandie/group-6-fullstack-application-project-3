@@ -66,16 +66,16 @@ DATA_POINTS_SERIES = {
 def seed():
     app = create_app()
     with app.app_context():
-        admin_username = os.getenv("ADMIN_USERNAME", "admin")
+        admin_email = os.getenv("ADMIN_EMAIL", "admin@ghdashboard.local")
         admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
 
-        if not User.query.filter_by(username=admin_username).first():
-            admin = User(username=admin_username, is_admin=True)
+        if not User.query.filter_by(email=admin_email).first():
+            admin = User(email=admin_email, role="admin")
             admin.set_password(admin_password)
             db.session.add(admin)
-            print(f"Created admin user '{admin_username}' — change the default password before deploying.")
+            print(f"Created admin user '{admin_email}' — change the default password before deploying.")
         else:
-            print(f"Admin user '{admin_username}' already exists, skipping.")
+            print(f"Admin user '{admin_email}' already exists, skipping.")
 
         for name, iso_code in COUNTRIES:
             if not Country.query.filter_by(iso_code=iso_code).first():

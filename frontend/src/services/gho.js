@@ -25,18 +25,10 @@
 //   return apiFetch(`/${code}${filter}`);
 // }
 
-import axios from "axios";
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const api = axios.create({ baseURL: BASE_URL });
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Shared axios instance — already attaches the auth token via interceptor
+// (see api/axios.js) and wipes it on a 401. Don't create a second instance
+// here; that's how the token-key mismatch bug happened before.
+import api from "../api/axios";
 
 // Countries
 export async function getCountries() {
@@ -70,7 +62,7 @@ export async function getIndicatorData(code, countryCode) {
 // Favorites
 export async function getFavorites() {
   const res = await api.get("/favorites");
-  return res.data; // [{ id, countryId, note }]
+  return res.data; // [{ id, user_id, country_id, indicator_id, created_at }]
 }
 
 export async function addFavorite(data) {
@@ -107,12 +99,6 @@ export async function updateIndicator(id, data) {
 export async function deleteIndicator(id) {
   const res = await api.delete(`/indicators/${id}`);
   return res.data;
-}
-
-// Auth
-export async function login(username, password) {
-  const res = await api.post("/auth/login", { username, password });
-  return res.data; // { token, user: { id, username, is_admin } }
 }
 
 // Admin

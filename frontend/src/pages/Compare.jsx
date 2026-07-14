@@ -96,7 +96,8 @@ function Compare() {
   if (apiError) return <ErrorMessage message={apiError} />;
 
   return (
-    <div style={{ padding: "24px", maxWidth: "850px", margin: "0 auto" }}>
+    <main className="main-content">
+    <div style={{ maxWidth: "850px", margin: "0 auto" }}>
       <h2 style={{ marginBottom: "8px" }}>Country Comparison Dashboard</h2>
       <p style={{ color: "#555", marginBottom: "24px" }}>
         Compare <strong>Life Expectancy at Birth</strong> side-by-side across 2 to 4 countries.
@@ -182,6 +183,7 @@ function Compare() {
         })}
       </div>
     </div>
+    </main>
   );
 }
 

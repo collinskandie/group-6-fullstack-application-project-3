@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Hero from "../components/Hero";
+import FavoriteButton from "../components/FavoriteButton";
 import { getCountries, getIndicators, getIndicatorData } from "../services/gho";
 import '../assets/Dashboard.css';
 
@@ -49,6 +50,7 @@ function Dashboard() {
               const latest = sortedRecords[0];
 
               return {
+                id: indicator.id,
                 code: indicator.IndicatorCode,
                 name: indicator.IndicatorName,
                 unit: indicator.unit,
@@ -68,6 +70,8 @@ function Dashboard() {
 
     fetchDashboardData();
   }, [selectedCountry, indicators]);
+
+  const selectedCountryId = countries.find((c) => c.Code === selectedCountry)?.id;
 
   return (
       <main className="main-content">
@@ -120,6 +124,9 @@ function Dashboard() {
                   <span className="stat-value">{stat.value}</span>
                   <span className="stat-unit">{stat.unit}</span>
                 </div>
+                {selectedCountryId && (
+                  <FavoriteButton countryId={selectedCountryId} indicatorId={stat.id} />
+                )}
               </div>
           ))}
         </div>

@@ -1,0 +1,83 @@
+PR Review Notes — 2026-07-14
+Reviewed by: Collins
+Scope: PR #1 (rhodaandrian-cell/feature/auth-frontend) and PR #2 (samuelwanjau1-stack/feature/favorites-ui),
+both merged to main today. Checked against instructions3.md.
+
+Both PRs look reasonable in isolation, but they don't integrate with each other, and PR #2 doesn't
+integrate with the pre-existing Phase 2 admin flow. None of this is visible unless you actually
+run the merged app end-to-end. Filing here since both already merged — treat as fix-forward items,
+not blockers on the original PRs.
+
+===========================================================
+FOR RHODA (feature/auth-frontend)
+===============================================1
+1. [Integration] AuthContext doesn't expose the token.
+   File: frontend/src/context/AuthContext.jsx
+   The context value only exposes { user, isAuthenticated, isAdmin, loading, login, register, logout }.
+   Samuel's components (FavoriteButton.jsx, Favorites.jsx, WatchlistSidebar.jsx) all assumed
+   `const { token } = useContext(AuthContext)` would work. It doesn't — token is always undefined.
+   Ask: either expose `token` on the context value (read it from TOKEN_KEY), or — better — get
+   Samuel's components to use the shared `api` instance from api/axios.js instead of pulling the
+   token out of context manually. That instance already attaches the token via interceptor.
+
+2. [Bug] Legacy admin gate never got wired to the new unified auth.
+   Files: frontend/src/components/RequireAdmin.jsx, frontend/src/pages/admin/AdminLogin.jsx
+   RequireAdmin still checks localStorage["token"] + localStorage["is_admin"] === "true".
+   Your new login flow stores the JWT under localStorage["gho_token"] and never sets is_admin.
+   Net effect: an admin who logs in through the new unified /login can never reach /admin — always
+   bounced to the old /admin/login page. AdminLogin.jsx also still POSTs {username, password} to the
+   old login() in services/gho.js, not the {email, password} contract in authApi.js.
+   This is the exact "two auth systems" problem instructions3.md said to avoid (line 28-30:
+   "We are not building 'user auth' as a second system next to 'admin auth'").
+   Fix: retire RequireAdmin/AdminLogin, gate /admin/* with your ProtectedRoute requiredRole="admin"
+   instead.
+
+3. [Minor] localStorage[TOKEN_KEY] key name ("gho_token") isn't shared anywhere — services/gho.js
+   has its own separate axios instance reading a different key ("token"). Worth exporting TOKEN_KEY
+   from a single shared module so nobody drifts again.
+
+Nice work overall on loading states, redirect-back-after-login, and the "don't flash the login
+redirect while auth is still resolving" handling in ProtectedRoute — that was a nice touch.
+
+===========================================================
+FOR SAMUEL (feature/favorites-ui)
+===========================================================
+
+1. [Bug — crash] FavoriteButton.jsx reads process.env.REACT_APP_API_URL.
+   File: frontend/src/components/FavoriteButton.jsx
+   This is a Vite app — process isn't defined in the browser bundle here (everywhere else uses
+   import.meta.env.VITE_API_BASE_URL). This throws a ReferenceError the moment the component
+   renders. Also the fallback URL (localhost:5000/api) doesn't match the rest of the app's
+   fallback (localhost:5001).
+
+2. [Bug] FavoriteButton is never actually used anywhere.
+   Not imported into Dashboard/Trends/Compare, so "Save to favorites on indicators" isn't wired
+   up yet — and per #1, it would currently crash if it were.
+
+3. [Bug] WatchlistSidebar is imported in App.jsx but never rendered in JSX.
+   Dead import — the "Quick Watchlist" feature is invisible to users right now.
+
+4. [Bug] `token` pulled from AuthContext is always undefined (see Rhoda item #1 above), so
+   FavoriteButton / Favorites / WatchlistSidebar all early-return null / "please log in" even
+   for logged-in users. The favorites feature can't render for anyone as merged.
+
+5. [Gap] Favorites.jsx uses a hardcoded fallbackIndicators array (2 fake entries) instead of
+   calling the existing getIndicators() in services/gho.js. Swap it for the real call —
+   the function's already there.
+
+6. [Minor] FavoriteButton re-fetches the entire favorites list via GET on mount, then again on
+   every toggle before delete — works, but re-listing all favorites just to find one match is
+   wasteful. Once the backend returns the favorite id on creation you can just track that locally.
+
+Good instincts on the loading/error states and the optimistic-ish toggle UX — once the wiring
+above is fixed this should mostly just work.
+
+===========================================================
+CROSS-CUTTING
+===========================================================
+- Neither PR was actually run end-to-end together before merging — the token-shape mismatch
+  (#1 on both lists) would have shown up immediately in the browser console.
+- Backend (Shawn's auth/favorites routes) hasn't landed yet — instructions3.md's three access-
+  control rules (auth required, ownership, admin-only writes) can't be verified on the frontend
+  alone. Re-check once those routes are in: current backend is still Phase 2 (username/is_admin,
+  no /auth/register|logout|me, favorites routes have zero auth or ownership filtering at all).
