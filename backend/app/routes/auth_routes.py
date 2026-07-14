@@ -48,7 +48,6 @@ def register():
         return jsonify({"error": "Conflict", "message": "Username is already taken"}), 409
 
     try:
-        # Create user (role defaults to 'user' in Phase 3)
         new_user = User(username=username, email=email, role='user')
         new_user.set_password(password)
         
