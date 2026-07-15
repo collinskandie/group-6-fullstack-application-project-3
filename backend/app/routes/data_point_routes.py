@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.extensions import db
-from app.auth import require_admin
+from app.utils.decorators import admin_required
 from app.models.data_point import DataPoint
 from app.models.country import Country
 from app.models.indicator import Indicator
@@ -25,7 +25,7 @@ def get_data_points():
 
 # 2. CREATE A DATA POINT (With Validation & Error Handling)
 @data_point_bp.route("/", methods=["POST"])
-@require_admin
+@admin_required
 def create_data_point():
     data = request.get_json() or {}
 
@@ -64,7 +64,7 @@ def create_data_point():
 
 # 3. UPDATE A DATA POINT (PUT)
 @data_point_bp.route("/<int:id>", methods=["PUT"])
-@require_admin
+@admin_required
 def update_data_point(id):
     data_point = DataPoint.query.get(id)
     if not data_point:
@@ -119,7 +119,7 @@ def update_data_point(id):
 
 # 4. DELETE A DATA POINT (DELETE)
 @data_point_bp.route("/<int:id>", methods=["DELETE"])
-@require_admin
+@admin_required
 def delete_data_point(id):
     data_point = DataPoint.query.get(id)
     if not data_point:

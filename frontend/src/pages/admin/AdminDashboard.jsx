@@ -1,10 +1,10 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminCountries from "./AdminCountries";
 import AdminIndicators from "./AdminIndicators";
 import AdminDataPoints from "./AdminDataPoints";
 import AdminUsers from "./AdminUsers";
-import { AuthContext } from "../context/AuthContext"; // Integrated with Rhoda's context
+import { useAuth } from "../../context/AuthContext";
 
 const TABS = [
   { key: "countries", label: "Countries" },
@@ -16,25 +16,12 @@ const TABS = [
 function AdminDashboard() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("countries");
-  
-  // Consume Rhoda's auth state and unified logout process
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    logout(); // Let Rhoda's context handle clearing tokens cleanly
-    navigate("/login"); // Redirect to the unified single login flow
+    logout();
+    navigate("/login");
   };
-
-  // Guard clause: Secure layout check in case a normal user navigates here manually
-  if (user?.role !== "admin") {
-    return (
-      <main className="main-content">
-        <div className="error-banner">
-          Access Denied: Administrative privileges required.
-        </div>
-      </main>
-    );
-  }
 
   return (
     <main className="main-content">
@@ -42,7 +29,7 @@ function AdminDashboard() {
         <div>
           <h1>Admin Dashboard</h1>
           <p className="placeholder-text" style={{ margin: "0.5rem 0 0 0" }}>
-            Signed in as: <strong>{user?.email || user?.username}</strong>
+            Signed in as: <strong>{user?.email}</strong>
           </p>
         </div>
         <button onClick={handleLogout} className="btn-secondary">

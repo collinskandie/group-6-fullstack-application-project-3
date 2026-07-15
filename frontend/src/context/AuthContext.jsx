@@ -56,6 +56,12 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
+  // Sync context state after a successful profile save (PUT /auth/me),
+  // so the sidebar and other consumers reflect changes without a refetch.
+  function updateUser(userData) {
+    setUser(userData);
+  }
+
   const value = {
     user,
     isAuthenticated: user !== null,
@@ -64,6 +70,7 @@ export function AuthProvider({ children }) {
     login,
     register,
     logout,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

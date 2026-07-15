@@ -1,42 +1,39 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getFavorites, getCountries, addFavorite, deleteFavorite } from "../services/gho";
+import { getFavorites, getCountries, getIndicators, addFavorite, deleteFavorite } from "../services/gho";
 import Loading from "../components/Loading";
 import ErrorMessage from "../components/ErrorMessage";
-import { AuthContext } from "../context/AuthContext"; // Pulling Rhoda's Auth Context
+import { useAuth } from "../context/AuthContext";
 
 function Favorites() {
-  const { token, user } = useContext(AuthContext); // Accessing token and user data
+  const { isAuthenticated, user } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [countries, setCountries] = useState([]);
+  const [indicators, setIndicators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [selectedCountryId, setSelectedCountryId] = useState("");
-  const [selectedIndicatorId, setSelectedIndicatorId] = useState(""); // Phase 3 Indicator addition
+  const [selectedIndicatorId, setSelectedIndicatorId] = useState("");
   const [formError, setFormError] = useState(null);
-
-  // Hardcoded placeholders for indicators in case Shawn's indicator fetch service isn't built yet
-  const fallbackIndicators = [
-    { id: 1, name: "Life Expectancy at Birth", code: "WHOSIS_000001" },
-    { id: 2, name: "Maternal Mortality Ratio", code: "MATERNAL_MORTALITY" }
-  ];
 
   const loadFavorites = () => {
     setLoading(true);
     setError(null);
-    
-    // We pass the authentication token directly to the data services
-    Promise.all([getFavorites(token), getCountries()])
-      .then(([favData, countryData]) => {
+
+    // The shared axios instance (services/gho.js -> api/axios.js) already
+    // attaches the auth token via interceptor — no need to thread it through.
+    Promise.all([getFavorites(), getCountries(), getIndicators()])
+      .then(([favData, countryData, indicatorData]) => {
         setFavorites(favData);
         setCountries(countryData);
-        
+        setIndicators(indicatorData);
+
         if (countryData.length > 0 && !selectedCountryId) {
           setSelectedCountryId(String(countryData[0].id));
         }
-        if (fallbackIndicators.length > 0 && !selectedIndicatorId) {
-          setSelectedIndicatorId(String(fallbackIndicators[0].id));
+        if (indicatorData.length > 0 && !selectedIndicatorId) {
+          setSelectedIndicatorId(String(indicatorData[0].id));
         }
       })
       .catch((err) => setError(err.message))
@@ -44,27 +41,23 @@ function Favorites() {
   };
 
   useEffect(() => {
-    if (token) {
+    if (isAuthenticated) {
       loadFavorites();
     } else {
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [isAuthenticated]);
 
   const handleAdd = (e) => {
     e.preventDefault();
     setFormError(null);
     if (!selectedCountryId || !selectedIndicatorId) return;
 
-    // Send the country_id, indicator_id, and the auth token to the backend service
-    addFavorite(
-      { 
-        country_id: Number(selectedCountryId), 
-        indicator_id: Number(selectedIndicatorId) 
-      }, 
-      token
-    )
+    addFavorite({
+      country_id: Number(selectedCountryId),
+      indicator_id: Number(selectedIndicatorId),
+    })
       .then((fav) => {
         setFavorites([...favorites, fav]);
       })
@@ -72,13 +65,12 @@ function Favorites() {
   };
 
   const handleDelete = (id) => {
-    // Pass token to allow secure ownership-checked deletes
-    deleteFavorite(id, token)
+    deleteFavorite(id)
       .then(() => setFavorites(favorites.filter((f) => f.id !== id)))
       .catch(() => setFormError("Failed to delete favorite"));
   };
 
-  if (!token) {
+  if (!isAuthenticated) {
     return (
       <main className="main-content">
         <div className="error-banner">Please log in to view your personalized favorites dashboard.</div>
@@ -97,12 +89,13 @@ function Favorites() {
       </header>
 
       <div className="filter-card" style={{ marginBottom: "1.5rem" }}>
-        <label className="filter-label">Add an Indicator + Country to your Watchlist</label>
+        <h3 className="filter-label">Add an Indicator + Country to your Watchlist</h3>
         <form onSubmit={handleAdd} style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center", marginTop: "0.5rem" }}>
-          
+
           {/* Country Selection Dropdown */}
           <select
             className="filter-select"
+            aria-label="Country"
             value={selectedCountryId}
             onChange={(e) => setSelectedCountryId(e.target.value)}
           >
@@ -116,28 +109,26 @@ function Favorites() {
           {/* New Phase 3 Indicator Dropdown Selection */}
           <select
             className="filter-select"
+            aria-label="Indicator"
             value={selectedIndicatorId}
             onChange={(e) => setSelectedIndicatorId(e.target.value)}
           >
-            {fallbackIndicators.map((i) => (
+            {indicators.map((i) => (
               <option key={i.id} value={i.id}>
-                {i.name}
+                {i.name || i.IndicatorName}
               </option>
             ))}
           </select>
 
-          <button
-            type="submit"
-            style={{ background: "var(--color-primary)", color: "#fff", fontWeight: 600, fontSize: "0.875rem", padding: "0.6rem 1.25rem", border: "none", borderRadius: "var(--radius)", cursor: "pointer" }}
-          >
+          <button type="submit" className="btn-primary">
             Save to Watchlist
           </button>
         </form>
-        {formError && <p style={{ color: "#dc2626", fontSize: "13px", marginTop: "8px" }}>{formError}</p>}
+        {formError && <p style={{ color: "var(--color-error-text)", fontSize: "13px", marginTop: "8px" }}>{formError}</p>}
       </div>
 
       {favorites.length === 0 ? (
-        <p style={{ color: "#6b7280" }}>No metrics saved on your tracking list yet.</p>
+        <p style={{ color: "var(--color-text-muted)" }}>No metrics saved on your tracking list yet.</p>
       ) : (
         <table className="data-table">
           <thead>
@@ -150,20 +141,17 @@ function Favorites() {
           <tbody>
             {favorites.map((fav) => {
               const country = countries.find((c) => c.id === fav.country_id);
-              const indicator = fallbackIndicators.find((i) => i.id === fav.indicator_id);
+              const indicator = indicators.find((i) => i.id === fav.indicator_id);
               const countryCode = country?.Code;
               return (
                 <tr key={fav.id}>
                   <td>{country ? (country.Title || country.name) : `Country #${fav.country_id}`}</td>
-                  <td>{indicator ? indicator.name : `Indicator #${fav.indicator_id}`}</td>
+                  <td>{indicator ? (indicator.name || indicator.IndicatorName) : `Indicator #${fav.indicator_id}`}</td>
                   <td style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
                     {countryCode && (
                       <Link to={`/trends?country=${countryCode}`}>View trends</Link>
                     )}
-                    <button
-                      onClick={() => handleDelete(fav.id)}
-                      style={{ background: "#d93025", color: "#fff", border: "none", padding: "4px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}
-                    >
+                    <button onClick={() => handleDelete(fav.id)} className="btn-danger">
                       Remove
                     </button>
                   </td>

@@ -47,10 +47,11 @@ function AdminIndicators() {
   return (
     <div>
       <div className="filter-card" style={{ marginBottom: "1.5rem", maxWidth: "420px" }}>
-        <label className="filter-label">Add Indicator</label>
+        <h3 className="filter-label">Add Indicator</h3>
         <form onSubmit={handleAdd} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           <input
             type="text"
+            aria-label="WHO indicator code"
             placeholder="WHO Indicator Code (e.g., WHOSIS_000001)"
             value={code}
             onChange={(e) => setCode(e.target.value)}
@@ -58,6 +59,7 @@ function AdminIndicators() {
           />
           <input
             type="text"
+            aria-label="Display name"
             placeholder="Display Name (e.g., Life Expectancy at Birth)"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -65,19 +67,17 @@ function AdminIndicators() {
           />
           <input
             type="text"
+            aria-label="Unit (optional)"
             placeholder="Unit (optional, e.g., years)"
             value={unit}
             onChange={(e) => setUnit(e.target.value)}
             className="filter-select"
           />
-          <button
-            type="submit"
-            style={{ background: "var(--color-primary)", color: "#fff", fontWeight: 600, fontSize: "0.875rem", padding: "0.6rem 1.25rem", border: "none", borderRadius: "var(--radius)", cursor: "pointer" }}
-          >
+          <button type="submit" className="btn-primary">
             Save Indicator
           </button>
         </form>
-        {formError && <p style={{ color: "#dc2626", fontSize: "13px", marginTop: "8px" }}>{formError}</p>}
+        {formError && <p style={{ color: "var(--color-error-text)", fontSize: "13px", marginTop: "8px" }}>{formError}</p>}
       </div>
 
       <table className="data-table">
@@ -96,10 +96,7 @@ function AdminIndicators() {
               <td>{i.name}</td>
               <td>{i.unit || "—"}</td>
               <td style={{ textAlign: "right" }}>
-                <button
-                  onClick={() => handleDelete(i.id)}
-                  style={{ background: "#d93025", color: "#fff", border: "none", padding: "4px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}
-                >
+                <button onClick={() => handleDelete(i.id)} className="btn-danger">
                   Delete
                 </button>
               </td>

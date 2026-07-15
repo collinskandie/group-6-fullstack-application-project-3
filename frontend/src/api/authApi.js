@@ -34,8 +34,28 @@ export function logout() {
  * Get the currently logged-in user.
  * Used by AuthContext on page load to check if the stored token is still valid.
  * GET /auth/me
- * Response: { id, email, role }
+ * Response: { id, email, role, name, phone, address }
  */
 export function getMe() {
   return api.get("/auth/me");
+}
+
+/**
+ * Update the current user's own profile fields.
+ * PUT /auth/me
+ * Body:     { name?, email?, phone?, address? }
+ * Response: { id, email, role, name, phone, address }
+ */
+export function updateMe(data) {
+  return api.put("/auth/me", data);
+}
+
+/**
+ * Change the current user's password.
+ * PUT /auth/me/password
+ * Body:     { current_password, new_password }
+ * Response: { message }
+ */
+export function changePassword({ current_password, new_password }) {
+  return api.put("/auth/me/password", { current_password, new_password });
 }

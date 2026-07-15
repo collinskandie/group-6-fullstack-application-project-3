@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from app.extensions import db
-from app.auth import require_admin
 from app.models.country import Country
+from app.utils.decorators import admin_required
 
 country_bp = Blueprint("country", __name__)
 
@@ -13,7 +13,7 @@ def get_countries():
 
 # 2. CREATE A NEW COUNTRY (With Validation & Error Handling)
 @country_bp.route("/", methods=["POST"])
-@require_admin
+@admin_required
 def create_country():
     data = request.get_json() or {}
     
@@ -46,7 +46,7 @@ def create_country():
 
 # 3. UPDATE A COUNTRY (PUT)
 @country_bp.route("/<int:id>", methods=["PUT"])
-@require_admin
+@admin_required
 def update_country(id):
     country = Country.query.get(id)
     if not country:
@@ -81,7 +81,7 @@ def update_country(id):
 
 # 4. DELETE A COUNTRY (DELETE)
 @country_bp.route("/<int:id>", methods=["DELETE"])
-@require_admin
+@admin_required
 def delete_country(id):
     country = Country.query.get(id)
     if not country:

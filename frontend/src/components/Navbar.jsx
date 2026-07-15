@@ -6,12 +6,14 @@ const LINKS = [
   { to: "/trends", label: "Trends", icon: "📈" },
   { to: "/compare", label: "Compare", icon: "⇄" },
   { to: "/favorites", label: "Favorites", icon: "★" },
-  { to: "/admin", label: "Admin", icon: "⚙" },
 ];
 
+const ADMIN_LINK = { to: "/admin", label: "Admin", icon: "⚙" };
+
 function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
+  const links = isAdmin ? [...LINKS, ADMIN_LINK] : LINKS;
 
   async function handleLogout() {
     await logout();
@@ -26,7 +28,7 @@ function Navbar() {
       </div>
 
       <ul className="sidebar-links">
-        {LINKS.map(({ to, label, icon }) => (
+        {links.map(({ to, label, icon }) => (
           <li key={to}>
             <NavLink
               to={to}
@@ -44,17 +46,17 @@ function Navbar() {
       <div className="sidebar-auth">
         {isAuthenticated ? (
           <>
-            <div className="sidebar-user" title={user.email}>
+            <NavLink to="/profile" className="sidebar-user" title="View profile">
               <span className="sidebar-user-avatar" aria-hidden="true">
                 {user.email[0]}
               </span>
               <div className="sidebar-user-info">
-                <span className="sidebar-user-email">{user.email}</span>
+                <span className="sidebar-user-email">{user.name || user.email}</span>
                 {user.role === "admin" && (
                   <span className="sidebar-user-role">Admin</span>
                 )}
               </div>
-            </div>
+            </NavLink>
             <button
               type="button"
               onClick={handleLogout}

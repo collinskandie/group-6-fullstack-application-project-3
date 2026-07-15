@@ -1,21 +1,29 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
-import RequireAdmin from './components/RequireAdmin';
 import Dashboard from './pages/Dashboard';
 import Trends from './pages/Trends';
 import Compare from './pages/Compare';
 import Favorites from './pages/Favorites';
+import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import WatchlistSidebar from "./components/WatchlistSidebar";
 
 export default function App() {
+  const location = useLocation();
+  // Login/register are unauthenticated — no user context yet, so there's
+  // nothing for the sidebar (nav, avatar, admin link) to reflect.
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  // Redundant with (and visually collides with) the full favorites manager
+  // on /favorites, and doesn't belong on the admin surface — only float it
+  // over the general-exploration pages.
+  const showWatchlist = !location.pathname.startsWith('/favorites') && !location.pathname.startsWith('/admin');
+
   return (
     <div className="app-shell">
-      <Navbar />
+      {!isAuthPage && <Navbar />}
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
@@ -38,17 +46,26 @@ export default function App() {
           }
         />
 
-        {/* Phase 2 admin gate — Collins's territory, don't touch */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin — same unified auth, gated by role */}
         <Route
           path="/admin/*"
           element={
-            <RequireAdmin>
+            <ProtectedRoute requiredRole="admin">
               <AdminDashboard />
-            </RequireAdmin>
+            </ProtectedRoute>
           }
         />
       </Routes>
+      {showWatchlist && <WatchlistSidebar />}
     </div>
   );
 }

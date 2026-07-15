@@ -1,38 +1,35 @@
-import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
-import { AuthContext } from '../context/AuthContext'; 
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { getFavorites, addFavorite, deleteFavorite } from '../services/gho';
 
 const FavoriteButton = ({ countryId, indicatorId }) => {
-  const { user, token } = useContext(AuthContext);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const [favoriteId, setFavoriteId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
   useEffect(() => {
-    if (!user || !token) return;
+    if (!isAuthenticated) return;
 
-    const checkFavoriteStatus = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/favorites`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const match = response.data.find(
+    let cancelled = false;
+    getFavorites()
+      .then((favorites) => {
+        if (cancelled) return;
+        const match = favorites.find(
           (fav) => fav.country_id === countryId && fav.indicator_id === indicatorId
         );
-        if (match) setIsFavorited(true);
-      } catch (err) {
-        console.error("Error fetching favorite status:", err);
-      }
-    };
+        setFavoriteId(match ? match.id : null);
+      })
+      .catch((err) => console.error('Error fetching favorite status:', err));
 
-    checkFavoriteStatus();
-  }, [countryId, indicatorId, user, token, API_BASE_URL]);
+    return () => {
+      cancelled = true;
+    };
+  }, [countryId, indicatorId, isAuthenticated]);
 
   const handleFavoriteToggle = async () => {
-    if (!user) {
-      setError("Please log in to save favorites.");
+    if (!isAuthenticated) {
+      setError('Please log in to save favorites.');
       return;
     }
 
@@ -40,45 +37,30 @@ const FavoriteButton = ({ countryId, indicatorId }) => {
     setError(null);
 
     try {
-      if (isFavorited) {
-        const res = await axios.get(`${API_BASE_URL}/favorites`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const target = res.data.find(
-          (fav) => fav.country_id === countryId && fav.indicator_id === indicatorId
-        );
-        
-        if (target) {
-          await axios.delete(`${API_BASE_URL}/favorites/${target.id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          setIsFavorited(false);
-        }
+      if (favoriteId) {
+        await deleteFavorite(favoriteId);
+        setFavoriteId(null);
       } else {
-        await axios.post(
-          `${API_BASE_URL}/favorites`,
-          { country_id: countryId, indicator_id: indicatorId },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setIsFavorited(true);
+        const created = await addFavorite({ country_id: countryId, indicator_id: indicatorId });
+        setFavoriteId(created.id);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update favorite.");
+      setError(err.response?.data?.message || 'Failed to update favorite.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!user) return null; 
+  if (!isAuthenticated) return null;
 
   return (
     <div className="favorite-button-container">
-      <button 
-        onClick={handleFavoriteToggle} 
+      <button
+        onClick={handleFavoriteToggle}
         disabled={loading}
-        className={`fav-btn ${isFavorited ? 'active' : ''}`}
+        className={`fav-btn ${favoriteId ? 'active' : ''}`}
       >
-        {loading ? 'Processing...' : isFavorited ? '★ Saved to Favorites' : '☆ Save to Favorites'}
+        {loading ? 'Processing...' : favoriteId ? '★ Saved to Favorites' : '☆ Save to Favorites'}
       </button>
       {error && <p className="fav-error-text">{error}</p>}
     </div>

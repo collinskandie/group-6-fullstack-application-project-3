@@ -61,20 +61,21 @@ function AdminDataPoints() {
   return (
     <div>
       <div className="filter-card" style={{ marginBottom: "1.5rem", maxWidth: "480px" }}>
-        <label className="filter-label">Add Data Point</label>
+        <h3 className="filter-label">Add Data Point</h3>
         <form onSubmit={handleAdd} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          <select className="filter-select" value={countryId} onChange={(e) => setCountryId(e.target.value)}>
+          <select className="filter-select" aria-label="Country" value={countryId} onChange={(e) => setCountryId(e.target.value)}>
             {countries.map((c) => (
               <option key={c.id} value={c.id}>{c.Title}</option>
             ))}
           </select>
-          <select className="filter-select" value={indicatorId} onChange={(e) => setIndicatorId(e.target.value)}>
+          <select className="filter-select" aria-label="Indicator" value={indicatorId} onChange={(e) => setIndicatorId(e.target.value)}>
             {indicators.map((i) => (
               <option key={i.id} value={i.id}>{i.IndicatorName}</option>
             ))}
           </select>
           <input
             type="number"
+            aria-label="Year"
             placeholder="Year (e.g., 2022)"
             value={year}
             onChange={(e) => setYear(e.target.value)}
@@ -83,19 +84,17 @@ function AdminDataPoints() {
           <input
             type="number"
             step="any"
+            aria-label="Value"
             placeholder="Value"
             value={value}
             onChange={(e) => setValue(e.target.value)}
             className="filter-select"
           />
-          <button
-            type="submit"
-            style={{ background: "var(--color-primary)", color: "#fff", fontWeight: 600, fontSize: "0.875rem", padding: "0.6rem 1.25rem", border: "none", borderRadius: "var(--radius)", cursor: "pointer" }}
-          >
+          <button type="submit" className="btn-primary">
             Save Data Point
           </button>
         </form>
-        {formError && <p style={{ color: "#dc2626", fontSize: "13px", marginTop: "8px" }}>{formError}</p>}
+        {formError && <p style={{ color: "var(--color-error-text)", fontSize: "13px", marginTop: "8px" }}>{formError}</p>}
       </div>
 
       <table className="data-table">
@@ -116,10 +115,7 @@ function AdminDataPoints() {
               <td>{dp.year}</td>
               <td>{dp.value}</td>
               <td style={{ textAlign: "right" }}>
-                <button
-                  onClick={() => handleDelete(dp.id)}
-                  style={{ background: "#d93025", color: "#fff", border: "none", padding: "4px 10px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" }}
-                >
+                <button onClick={() => handleDelete(dp.id)} className="btn-danger">
                   Delete
                 </button>
               </td>
