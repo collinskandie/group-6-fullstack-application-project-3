@@ -5,13 +5,17 @@ life expectancy, child mortality, maternal health, and more — across
 countries, without needing to know an API or write SQL. Pick a country,
 pick an indicator, see the trend.
 
-This is **Phase 2 of 3** of a Moringa School capstone. Phase 1 was a
+This is **Phase 3 of 3** of a Moringa School capstone. Phase 1 was a
 React app that pulled live data from the public WHO Global Health
-Observatory (GHO) API. Phase 2 (this repo, current state) replaces that
-public API with our own **Flask + PostgreSQL** backend, so the app now
-owns and curates its own data instead of mirroring a third party.
+Observatory (GHO) API. Phase 2 replaced that public API with our own
+**Flask + PostgreSQL** backend, so the app owns and curates its own
+data instead of mirroring a third party. Phase 3 (this repo, current
+state) adds full user accounts: registration/login for everyone,
+role-based access control (`user` vs `admin`), a self-service profile
+page, and an admin dashboard for managing users, countries,
+indicators, and data points.
 
-**Live app:** [groupsix.syknown.co.ke](https://groupsix.syknown.co.ke)
+**Live app:** [https://project3-moringa.syknown.co.ke/dashboard](https://project3-moringa.syknown.co.ke/dashboard)
 **Youtube Link:** [https://youtu.be/g1677qL8Nm0](https://youtu.be/g1677qL8Nm0)
 
 ---
@@ -35,7 +39,7 @@ owns and curates its own data instead of mirroring a third party.
 | Frontend | React 19, React Router, Recharts, Axios, Vite |
 | Backend | Flask, SQLAlchemy, Flask-Migrate, Flask-CORS, Marshmallow |
 | Database | PostgreSQL |
-| Auth | Signed-token admin gate (`itsdangerous` + `werkzeug` password hashing) |
+| Auth | Signed-token user/admin auth (`itsdangerous` + `werkzeug` password hashing) |
 | Deployment | Gunicorn + Nginx + Let's Encrypt |
 
 ---
@@ -125,12 +129,17 @@ The app runs at the local URL Vite prints (usually `http://localhost:5173`).
 - **Compare** — put 2–4 countries side by side on the same indicator.
 - **Favorites** — bookmark a country with a note, and jump straight back
   into its Trends view later (full CRUD).
-- **Admin** — a token-gated section where an administrator curates the
-  dataset: add/edit/remove countries, indicators, and data points, plus a
-  read-only view of registered users.
+- **Accounts** — register/log in, and manage your own name, email, phone,
+  address, and password from a Profile page (click your name in the
+  sidebar).
+- **Admin** — a role-gated section where an administrator curates the
+  dataset (add/edit/remove countries, indicators, and data points) and
+  manages user accounts: add users, edit their details/role, and delete
+  them. The last remaining admin account is protected from being deleted
+  or demoted, and an admin can't delete their own account.
 
 All reads (Dashboard, Trends, Compare, Favorites) are open; all writes to
-Countries, Indicators, and Data Points require an admin login.
+Countries, Indicators, Data Points, and Users require an admin login.
 
 ---
 
@@ -142,8 +151,8 @@ Countries, Indicators, and Data Points require an admin login.
 | Indicators | `GET/POST /indicators`, `PUT/DELETE /indicators/<id>` |
 | Data Points | `GET/POST /data-points`, `PUT/DELETE /data-points/<id>` |
 | Favorites | `GET/POST /favorites`, `PUT/DELETE /favorites/<id>` |
-| Auth | `POST /auth/login` |
-| Admin | `GET /admin/users` |
+| Auth | `POST /auth/register`, `POST /auth/login`, `POST /auth/logout`, `GET/PUT /auth/me`, `PUT /auth/me/password` |
+| Admin — Users | `GET/POST /admin/users`, `PUT/DELETE /admin/users/<id>` |
 
 Full endpoint details live in [`backend/README.md`](backend/README.md).
 

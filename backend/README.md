@@ -14,10 +14,15 @@ Health Dashboard application.
 In Phase 1, the frontend consumed the WHO Global Health Observatory
 public API directly.
 
-For Phase 2, we are extending the application into a full-stack solution
-by introducing our own backend and PostgreSQL database. The backend
-stores and manages user-created data while exposing RESTful API
-endpoints that the React frontend consumes.
+For Phase 2, we extended the application into a full-stack solution by
+introducing our own backend and PostgreSQL database. The backend stores
+and manages user-created data while exposing RESTful API endpoints that
+the React frontend consumes.
+
+For Phase 3, the backend gained full user accounts: registration/login
+for everyone, signed-token session auth, role-based access control
+(`user` vs `admin`), self-service profile/password management, and an
+admin API for managing user accounts.
 
 ------------------------------------------------------------------------
 
@@ -28,6 +33,10 @@ endpoints that the React frontend consumes.
 -   SQLAlchemy ORM
 -   Database migrations with Flask-Migrate
 -   Full CRUD operations
+-   Token-based authentication (`itsdangerous` signed tokens) with
+    `user`/`admin` roles
+-   Self-service profile and password management
+-   Admin user management (add/edit/delete, with last-admin protection)
 -   JSON API responses
 -   Modular project architecture
 -   CORS enabled
@@ -117,6 +126,10 @@ FLASK_ENV=development
 SECRET_KEY=your-secret-key
 
 DATABASE_URL=postgresql://postgres:password@localhost:5432/health_dashboard
+
+# Optional — used by seed.py to create/update the default admin account
+ADMIN_EMAIL=admin@ghdashboard.local
+ADMIN_PASSWORD=admin123
 ```
 
 ------------------------------------------------------------------------
@@ -145,38 +158,74 @@ python run.py
 
 API URL
 
-    http://localhost:5000
+    http://localhost:5001
 
 ------------------------------------------------------------------------
 
-# Example API Endpoints
+# API Endpoints
+
+## Auth
+
+  Method   Endpoint             Auth           Notes
+  -------- -------------------- -------------- --------------------------------------------
+  POST     /auth/register       —              `{ email, password }`
+  POST     /auth/login          —              `{ email, password }`
+  POST     /auth/logout         —              stateless no-op, kept for symmetry
+  GET      /auth/me             login required current user's profile
+  PUT      /auth/me             login required update own `name`/`email`/`phone`/`address`
+  PUT      /auth/me/password    login required `{ current_password, new_password }`
 
 ## Countries
 
-  Method   Endpoint
-  -------- --------------------------
-  GET      /countries
-  GET      /countries/`<id>`{=html}
-  POST     /countries
-  PATCH    /countries/`<id>`{=html}
-  DELETE   /countries/`<id>`{=html}
+  Method   Endpoint            Auth
+  -------- ------------------- --------------
+  GET      /countries          —
+  POST     /countries          admin
+  PUT      /countries/`<id>`   admin
+  DELETE   /countries/`<id>`   admin
+
+## Indicators
+
+  Method   Endpoint            Auth
+  -------- ------------------- --------------
+  GET      /indicators         —
+  POST     /indicators         admin
+  PUT      /indicators/`<id>`  admin
+  DELETE   /indicators/`<id>`  admin
+
+## Data Points
+
+  Method   Endpoint             Auth           Notes
+  -------- -------------------- -------------- --------------------------------------
+  GET      /data-points         —              optional `?country_code=&indicator_code=`
+  POST     /data-points         admin
+  PUT      /data-points/`<id>`  admin
+  DELETE   /data-points/`<id>`  admin
 
 ## Favorites
 
-  Method   Endpoint
-  -------- --------------------------
-  GET      /favorites
-  GET      /favorites/`<id>`{=html}
-  POST     /favorites
-  PATCH    /favorites/`<id>`{=html}
-  DELETE   /favorites/`<id>`{=html}
+  Method   Endpoint            Auth           Notes
+  -------- ------------------- -------------- --------------------------------------
+  GET      /favorites          login required scoped to the logged-in user
+  POST     /favorites          login required
+  PUT      /favorites/`<id>`   login required
+  DELETE   /favorites/`<id>`   login required
+
+## Admin — Users
+
+  Method   Endpoint            Auth   Notes
+  -------- ------------------- ------ --------------------------------------------------
+  GET      /admin/users        admin  list all users
+  POST     /admin/users        admin  `{ email, password, role?, name?, phone?, address? }`
+  PUT      /admin/users/`<id>` admin  update any subset of fields, including `role`
+  DELETE   /admin/users/`<id>` admin  blocked for self-delete or the last remaining admin
 
 ------------------------------------------------------------------------
 
 # Future Improvements
 
--   JWT Authentication
--   User Accounts
+-   Password reset via email
+-   Refresh tokens / server-side session revocation
 -   Search & Filtering
 -   Swagger/OpenAPI Documentation
 -   Docker Support
