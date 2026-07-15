@@ -217,7 +217,7 @@ Before opening a Pull Request:
 
 - Endpoint tested (Postman) and returns JSON with proper status codes
 - Auth **and** ownership enforced where relevant — tested, not assumed
-- Migrations succeed, no server errors
+- Migrations succeed no server errors
 
 **Frontend**
 

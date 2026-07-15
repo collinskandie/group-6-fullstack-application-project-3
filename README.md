@@ -130,7 +130,7 @@ The app runs at the local URL Vite prints (usually `http://localhost:5173`).
   read-only view of registered users.
 
 All reads (Dashboard, Trends, Compare, Favorites) are open; all writes to
-Countries, Indicators, and Data Points require an admin login.
+Countries, Indicators, and Data Points requires an admin login.
 
 ---
 
