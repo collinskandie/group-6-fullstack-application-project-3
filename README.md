@@ -160,7 +160,7 @@ Full endpoint details live in [`backend/README.md`](backend/README.md).
 
 ## Deployment
 
-The app is deployed at **[groupsix.syknown.co.ke](https://groupsix.syknown.co.ke)**:
+The app is deployed at **[LINK]([https://groupsix.syknown.co.ke](https://project3-moringa.syknown.co.ke/dashboard))**:
 
 - Backend: Flask + Gunicorn (systemd service), PostgreSQL, behind Nginx
 - Frontend: static Vite build served by Nginx
