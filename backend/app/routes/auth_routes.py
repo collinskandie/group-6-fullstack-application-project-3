@@ -60,3 +60,59 @@ def logout():
 @login_required
 def me():
     return jsonify(g.current_user.to_dict()), 200
+
+
+@auth_bp.route("/me", methods=["PUT"])
+@login_required
+def update_me():
+    user = g.current_user
+    data = request.get_json() or {}
+
+    if "email" in data:
+        email = data["email"].strip().lower()
+        if not email or not EMAIL_RE.match(email):
+            return jsonify({"error": "Bad Request", "message": "A valid email is required"}), 400
+        existing = User.query.filter(User.email == email, User.id != user.id).first()
+        if existing:
+            return jsonify({"error": "Conflict", "message": "An account with this email already exists"}), 409
+        user.email = email
+
+    if "name" in data:
+        user.name = data["name"].strip() or None
+
+    if "phone" in data:
+        user.phone = data["phone"].strip() or None
+
+    if "address" in data:
+        user.address = data["address"].strip() or None
+
+    try:
+        db.session.commit()
+        return jsonify(user.to_dict()), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
+
+
+@auth_bp.route("/me/password", methods=["PUT"])
+@login_required
+def update_password():
+    user = g.current_user
+    data = request.get_json() or {}
+
+    current_password = data.get("current_password", "")
+    new_password = data.get("new_password", "")
+
+    if not user.check_password(current_password):
+        return jsonify({"error": "Unauthorized", "message": "Current password is incorrect"}), 401
+
+    if len(new_password) < 8:
+        return jsonify({"error": "Bad Request", "message": "Password must be at least 8 characters"}), 400
+
+    try:
+        user.set_password(new_password)
+        db.session.commit()
+        return jsonify({"message": "Password updated"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Internal Server Error", "message": str(e)}), 500

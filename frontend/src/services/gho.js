@@ -107,6 +107,21 @@ export async function getUsers() {
   return res.data;
 }
 
+export async function addUser(data) {
+  const res = await api.post("/admin/users", data);
+  return res.data;
+}
+
+export async function updateUser(id, data) {
+  const res = await api.put(`/admin/users/${id}`, data);
+  return res.data;
+}
+
+export async function deleteUser(id) {
+  const res = await api.delete(`/admin/users/${id}`);
+  return res.data;
+}
+
 // Data points (manual per-country/indicator/year values)
 export async function getDataPoints() {
   const res = await api.get("/data-points");

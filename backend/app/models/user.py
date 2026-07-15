@@ -12,6 +12,9 @@ class User(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), nullable=False, default="user")
+    name = db.Column(db.String(255), nullable=True)
+    phone = db.Column(db.String(30), nullable=True)
+    address = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
     @property
@@ -29,4 +32,7 @@ class User(db.Model):
             "id": self.id,
             "email": self.email,
             "role": self.role,
+            "name": self.name,
+            "phone": self.phone,
+            "address": self.address,
         }
